@@ -421,23 +421,34 @@
 
         jersey = gltf.scene;
 
+        const meshMaterialReport = [];
+
         jersey.traverse((object) => {
           if (!object.isMesh) return;
-
+        
           const materials = Array.isArray(object.material)
             ? object.material
             : [object.material];
-
+        
           materials.forEach((material) => {
+            meshMaterialReport.push({
+              mesh: object.name,
+              material: material.name,
+              hasUV: !!object.geometry.attributes.uv,
+              uvCount: object.geometry.attributes.uv?.count || 0
+            });
+        
             material.map = texture;
-
+        
             if (material.emissiveMap) {
               material.emissiveMap = texture;
             }
-
+        
             material.needsUpdate = true;
           });
         });
+        
+        console.table(meshMaterialReport);
 
         const box = new THREE.Box3().setFromObject(jersey);
         const size = box.getSize(new THREE.Vector3());
