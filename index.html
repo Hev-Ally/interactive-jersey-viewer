@@ -429,14 +429,17 @@
             : [object.material];
 
           materials.forEach((material) => {
-            if (material.map) {
-              material.map = texture;
-            }
+            console.log(
+              "Material:",
+              material.name,
+              "| Has map:",
+              !!material.map,
+              "| Has emissiveMap:",
+              !!material.emissiveMap
+            );
 
-            if (material.emissiveMap) {
-              material.emissiveMap = texture;
-            }
-
+            if (material.map) material.map = texture;
+            if (material.emissiveMap) material.emissiveMap = texture;
             material.needsUpdate = true;
           });
         });
