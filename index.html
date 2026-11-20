@@ -435,7 +435,9 @@
               mesh: object.name,
               material: material.name,
               hasUV: !!object.geometry.attributes.uv,
-              uvCount: object.geometry.attributes.uv?.count || 0
+              hasUV2: !!object.geometry.attributes.uv2,
+              uvCount: object.geometry.attributes.uv?.count || 0,
+              materialSide: material.side
             });
         
             material.map = texture;
