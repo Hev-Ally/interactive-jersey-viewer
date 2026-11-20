@@ -442,20 +442,18 @@
         });
 
         const box = new THREE.Box3().setFromObject(jersey);
-        const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
-        console.log("Jersey dimensions:", size);
-        console.log("Jersey center:", center);
-        console.log(
-          "Mesh count:",
-          jersey.children.length,
-          jersey
-        );
-        jersey.position.sub(center);
 
         const maxDimension = Math.max(size.x, size.y, size.z);
         const scale = 2.5 / maxDimension;
+
         jersey.scale.setScalar(scale);
+
+        const scaledBox = new THREE.Box3().setFromObject(jersey);
+        
+        const center = scaledBox.getCenter(new THREE.Vector3());
+
+jersey.position.sub(center);
 
         scene.add(jersey);
 
