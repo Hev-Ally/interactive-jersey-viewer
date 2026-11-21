@@ -426,46 +426,44 @@
         jersey.traverse((object) => {
           if (!object.isMesh) return;
         
+          const geometry = object.geometry;
           const materials = Array.isArray(object.material)
             ? object.material
             : [object.material];
         
-          const uv = object.geometry?.attributes?.uv;
+          const uvChannels = {
+            uv: geometry.attributes.uv,
+            uv1: geometry.attributes.uv1,
+            uv2: geometry.attributes.uv2,
+            uv3: geometry.attributes.uv3
+          };
         
-          let uvMinX = Infinity;
-          let uvMaxX = -Infinity;
-          let uvMinY = Infinity;
-          let uvMaxY = -Infinity;
+          const uvInfo = {};
         
-          if (uv) {
-            for (let i = 0; i < uv.count; i++) {
-              const x = uv.getX(i);
-              const y = uv.getY(i);
-        
-              uvMinX = Math.min(uvMinX, x);
-              uvMaxX = Math.max(uvMaxX, x);
-              uvMinY = Math.min(uvMinY, y);
-              uvMaxY = Math.max(uvMaxY, y);
-            }
-          }
+          Object.entries(uvChannels).forEach(([name, attribute]) => {
+            uvInfo[name] = attribute
+              ? `Available (${attribute.count})`
+              : "Missing";
+          });
         
           materials.forEach((material) => {
             meshMaterialReport.push({
               mesh: object.name,
               material: material.name,
-              uvCount: uv?.count || 0,
-              minX: uv ? uvMinX.toFixed(3) : "No UV",
-              maxX: uv ? uvMaxX.toFixed(3) : "No UV",
-              minY: uv ? uvMinY.toFixed(3) : "No UV",
-              maxY: uv ? uvMaxY.toFixed(3) : "No UV"
+              uv: uvInfo.uv,
+              uv1: uvInfo.uv1,
+              uv2: uvInfo.uv2,
+              uv3: uvInfo.uv3,
+              originalMap: !!material.map,
+              originalNormalMap: !!material.normalMap,
+              originalRoughnessMap: !!material.roughnessMap
             });
         
-            // Apply custom jersey texture
             material.map = texture;
             material.color.set(0xffffff);
             material.needsUpdate = true;
           });
-        }); // IMPORTANT: closes jersey.traverse()
+        });
         
         console.table(meshMaterialReport);
         const box = new THREE.Box3().setFromObject(jersey);
