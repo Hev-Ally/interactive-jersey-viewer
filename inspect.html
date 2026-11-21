@@ -132,16 +132,33 @@
           materials.forEach((material) => {
             materialsSeen.add(material);
 
+
             meshReport.push({
               mesh: object.name || "Unnamed Mesh",
               material: material.name || "Unnamed Material",
               geometry: object.geometry.type,
               vertices: object.geometry.attributes.position?.count ?? 0,
+            
               uv: !!object.geometry.attributes.uv,
-              uv1: !!object.geometry.attributes.uv1,
+            
               hasColorMap: !!material.map,
               hasNormalMap: !!material.normalMap,
               hasRoughnessMap: !!material.roughnessMap,
+            
+              colorTexture: material.map?.name || "Unnamed Texture",
+            
+              textureWidth:
+                material.map?.image?.width ??
+                material.map?.source?.data?.width ??
+                null,
+            
+              textureHeight:
+                material.map?.image?.height ??
+                material.map?.source?.data?.height ??
+                null,
+            
+              textureColorSpace: material.map?.colorSpace || "None",
+            
               materialType: material.type
             });
           });
