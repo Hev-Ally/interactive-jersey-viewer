@@ -450,15 +450,34 @@
             meshMaterialReport.push({
               mesh: object.name,
               material: material.name,
+          
               uv: uvInfo.uv,
               uv1: uvInfo.uv1,
               uv2: uvInfo.uv2,
               uv3: uvInfo.uv3,
+          
               originalMap: !!material.map,
               originalNormalMap: !!material.normalMap,
               originalRoughnessMap: !!material.roughnessMap
             });
-        
+          
+            console.log("MATERIAL DETAILS:", object.name, {
+              material: material.name,
+          
+              colorMap: material.map?.name || "None",
+              colorMapImage: material.map?.image
+                ? {
+                    width: material.map.image.width,
+                    height: material.map.image.height
+                  }
+                : "None",
+          
+              emissiveMap: material.emissiveMap?.name || "None",
+              emissiveColor: material.emissive?.getHexString(),
+              materialColor: material.color?.getHexString()
+            });
+          
+            // Apply custom jersey texture
             material.map = texture;
             material.color.set(0xffffff);
             material.needsUpdate = true;
