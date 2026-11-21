@@ -422,7 +422,7 @@
         jersey = gltf.scene;
 
         const meshMaterialReport = [];
-
+        
         jersey.traverse((object) => {
           if (!object.isMesh) return;
         
@@ -430,38 +430,44 @@
             ? object.material
             : [object.material];
         
+          const uv = object.geometry?.attributes?.uv;
+        
+          let uvMinX = Infinity;
+          let uvMaxX = -Infinity;
+          let uvMinY = Infinity;
+          let uvMaxY = -Infinity;
+        
+          if (uv) {
+            for (let i = 0; i < uv.count; i++) {
+              const x = uv.getX(i);
+              const y = uv.getY(i);
+        
+              uvMinX = Math.min(uvMinX, x);
+              uvMaxX = Math.max(uvMaxX, x);
+              uvMinY = Math.min(uvMinY, y);
+              uvMaxY = Math.max(uvMaxY, y);
+            }
+          }
+        
           materials.forEach((material) => {
-            const uv = object.geometry.attributes.uv;
-              let uvMinX = Infinity;
-              let uvMaxX = -Infinity;
-              let uvMinY = Infinity;
-              let uvMaxY = -Infinity;
-              
-              if (uv) {
-                for (let i = 0; i < uv.count; i++) {
-                  const x = uv.getX(i);
-                  const y = uv.getY(i);
-              
-                  uvMinX = Math.min(uvMinX, x);
-                  uvMaxX = Math.max(uvMaxX, x);
-                  uvMinY = Math.min(uvMinY, y);
-                  uvMaxY = Math.max(uvMaxY, y);
-                }
-              }
-              
-              meshMaterialReport.push({
-                mesh: object.name,
-                material: material.name,
-                uvCount: uv?.count || 0,
-                minX: uvMinX.toFixed(3),
-                maxX: uvMaxX.toFixed(3),
-                minY: uvMinY.toFixed(3),
-                maxY: uvMaxY.toFixed(3)
-              });
-        });
+            meshMaterialReport.push({
+              mesh: object.name,
+              material: material.name,
+              uvCount: uv?.count || 0,
+              minX: uv ? uvMinX.toFixed(3) : "No UV",
+              maxX: uv ? uvMaxX.toFixed(3) : "No UV",
+              minY: uv ? uvMinY.toFixed(3) : "No UV",
+              maxY: uv ? uvMaxY.toFixed(3) : "No UV"
+            });
+        
+            // Apply custom jersey texture
+            material.map = texture;
+            material.color.set(0xffffff);
+            material.needsUpdate = true;
+          });
+        }); // IMPORTANT: closes jersey.traverse()
         
         console.table(meshMaterialReport);
-
         const box = new THREE.Box3().setFromObject(jersey);
         const size = box.getSize(new THREE.Vector3());
 
