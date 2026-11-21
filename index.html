@@ -421,50 +421,52 @@
 
         jersey = gltf.scene;
 
+
         const meshMaterialReport = [];
-        
+
         jersey.traverse((object) => {
           if (!object.isMesh) return;
-        
+
           const geometry = object.geometry;
+
           const materials = Array.isArray(object.material)
             ? object.material
             : [object.material];
-        
+
           const uvChannels = {
             uv: geometry.attributes.uv,
             uv1: geometry.attributes.uv1,
             uv2: geometry.attributes.uv2,
             uv3: geometry.attributes.uv3
           };
-        
+
           const uvInfo = {};
-        
+
           Object.entries(uvChannels).forEach(([name, attribute]) => {
             uvInfo[name] = attribute
               ? `Available (${attribute.count})`
               : "Missing";
           });
-        
+
           materials.forEach((material) => {
             meshMaterialReport.push({
               mesh: object.name,
               material: material.name,
-          
+
               uv: uvInfo.uv,
               uv1: uvInfo.uv1,
               uv2: uvInfo.uv2,
               uv3: uvInfo.uv3,
-          
+
               originalMap: !!material.map,
               originalNormalMap: !!material.normalMap,
               originalRoughnessMap: !!material.roughnessMap
             });
-          
+
             console.log("TEXTURE INSPECTION:", object.name, {
               material: material.name,
               materialUUID: material.uuid,
-            
+
               baseColorTexture: material.map
                 ? {
                     name: material.map.name || "Unnamed",
@@ -477,14 +479,16 @@
                     colorSpace: material.map.colorSpace
                   }
                 : "No Base Color Texture",
-            
+
               emissiveTexture: !!material.emissiveMap,
               normalTexture: !!material.normalMap,
               roughnessTexture: !!material.roughnessMap
             });
+          });
         });
-        
+
         console.table(meshMaterialReport);
+
         const box = new THREE.Box3().setFromObject(jersey);
         const size = box.getSize(new THREE.Vector3());
 
