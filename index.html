@@ -463,7 +463,6 @@
           
             console.log("TEXTURE INSPECTION:", object.name, {
               material: material.name,
-            
               materialUUID: material.uuid,
             
               baseColorTexture: material.map
@@ -480,9 +479,7 @@
                 : "No Base Color Texture",
             
               emissiveTexture: !!material.emissiveMap,
-            
               normalTexture: !!material.normalMap,
-            
               roughnessTexture: !!material.roughnessMap
             });
         });
