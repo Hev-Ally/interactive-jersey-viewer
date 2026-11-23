@@ -185,57 +185,55 @@
       exportArea.appendChild(button);
     }
 
-    function applyCustomJerseyTexture(model) {
-      status.textContent = "Loading custom jersey texture...";
+    function applyCustomTexture(model, meshName, filePath) {
+      return new Promise((resolve, reject) => {
+        textureLoader.load(
+          filePath,
 
-      textureLoader.load(
-        "./assets/top.png",
+          (texture) => {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.flipY = false;
+            texture.needsUpdate = true;
 
-        (texture) => {
-          texture.colorSpace = THREE.SRGBColorSpace;
-          texture.flipY = false;
-          texture.needsUpdate = true;
+            let targetFound = false;
 
-          let targetFound = false;
+            model.traverse((object) => {
+              if (object.isMesh && object.name === meshName) {
+                targetFound = true;
 
-          model.traverse((object) => {
-            if (object.isMesh && object.name === "3Jersey") {
-              targetFound = true;
+                const materials = Array.isArray(object.material)
+                  ? object.material
+                  : [object.material];
 
-              const materials = Array.isArray(object.material)
-                ? object.material
-                : [object.material];
+                materials.forEach((material) => {
+                  material.map = texture;
+                  material.needsUpdate = true;
+                });
+              }
+            });
 
-              materials.forEach((material) => {
-                material.map = texture;
-                material.needsUpdate = true;
-              });
+            if (targetFound) {
+              resolve(meshName);
+            } else {
+              texture.dispose();
+              reject(`Mesh not found: ${meshName}`);
             }
-          });
+          },
 
-          if (targetFound) {
-            status.textContent =
-              "Custom jersey texture applied successfully!";
-          } else {
-            status.textContent =
-              "Texture loaded, but mesh 3Jersey was not found.";
+          undefined,
+
+          (error) => {
+            console.error(error);
+            reject(`Failed to load: ${filePath}`);
           }
-        },
-
-        undefined,
-
-        (error) => {
-          console.error(error);
-          status.textContent =
-            "Custom texture loading failed. Check assets/top.png.";
-        }
-      );
+        );
+      });
     }
 
     loader.load(
       "./assets/Basketball%2BKit.glb",
 
-      (gltf) => {
+      async (gltf) => {
         const model = gltf.scene;
         scene.add(model);
 
@@ -325,7 +323,30 @@
 
         report.textContent = JSON.stringify(output, null, 2);
 
-        applyCustomJerseyTexture(model);
+        status.textContent = "Applying custom uniform textures...";
+
+        const results = await Promise.allSettled([
+          applyCustomTexture(model, "3Jersey", "./assets/top.png"),
+          applyCustomTexture(model, "4Short", "./assets/short.png")
+        ]);
+
+        const jerseyResult = results[0];
+        const shortsResult = results[1];
+
+        if (jerseyResult.status === "fulfilled" &&
+            shortsResult.status === "fulfilled") {
+
+          status.textContent =
+            "SUCCESS! Custom jersey and shorts textures applied.";
+
+        } else {
+          const errors = results
+            .filter(result => result.status === "rejected")
+            .map(result => result.reason);
+
+          status.textContent =
+            "Texture application issue: " + errors.join(" | ");
+        }
       },
 
       (progress) => {
