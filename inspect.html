@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Basketball Jersey Viewer</title>
+  <title>Vaughn Concha | 3D Jersey Showcase</title>
 
   <script type="importmap">
   {
@@ -24,86 +24,296 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: #101820;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-
-    #viewer {
-      width: 100vw;
-      height: 100vh;
-    }
-
-    .controls {
-      position: fixed;
-      bottom: 25px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding: 14px 18px;
-      background: rgba(10, 15, 20, 0.88);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 12px;
-      z-index: 10;
+      color: #f5f5f5;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(ellipse at 50% 42%, #26313b 0%, #151d25 40%, #090d12 100%);
     }
 
     button {
-      padding: 12px 22px;
-      border: none;
-      border-radius: 7px;
-      background: white;
-      color: #101820;
+      font: inherit;
+    }
+
+    #viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    #viewer canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* HEADER */
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 5;
+      padding: 27px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(
+        to bottom,
+        rgba(5,9,13,0.8),
+        rgba(5,9,13,0)
+      );
+    }
+
+    .brand {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .brand span {
+      color: #9bd9ff;
+    }
+
+    .header-label {
+      color: #aab5c0;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* LEFT INFORMATION */
+
+    .info {
+      position: fixed;
+      z-index: 4;
+      left: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      max-width: 290px;
+    }
+
+    .eyebrow {
+      color: #9bd9ff;
+      font-size: 10px;
+      letter-spacing: 3px;
       font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .info h1 {
+      font-size: clamp(32px, 5vw, 58px);
+      line-height: 0.98;
+      margin: 0 0 16px;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+    }
+
+    .info p {
+      color: #aab5c0;
+      font-size: 13px;
+      line-height: 1.8;
+      max-width: 240px;
+    }
+
+    .line {
+      width: 42px;
+      height: 2px;
+      background: #9bd9ff;
+      margin: 22px 0;
+    }
+
+    /* TOP STATUS */
+
+    #status {
+      position: fixed;
+      z-index: 6;
+      top: 105px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #c7d0d8;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* BOTTOM PANEL */
+
+    .bottom-panel {
+      position: fixed;
+      z-index: 5;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 25px 5% 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      background: linear-gradient(
+        to top,
+        rgba(5,9,13,0.95),
+        rgba(5,9,13,0.65),
+        transparent
+      );
+    }
+
+    .design-info {
+      min-width: 150px;
+    }
+
+    .design-number {
+      font-size: 10px;
+      color: #8d9ba8;
+      letter-spacing: 2px;
+      margin-bottom: 7px;
+    }
+
+    #designName {
+      font-size: 19px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    /* NAVIGATION */
+
+    .navigation {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-button {
+      height: 46px;
+      min-width: 125px;
+      padding: 0 18px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      background: rgba(255,255,255,0.06);
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .nav-button:hover {
+      color: #101820;
+      background: #9bd9ff;
+      border-color: #9bd9ff;
+      transform: translateY(-2px);
+    }
+
+    .nav-button:disabled {
+      opacity: 0.4;
+      cursor: wait;
+    }
+
+    /* VIEWER TOOLS */
+
+    .tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tool-button {
+      min-width: 45px;
+      height: 42px;
+      padding: 0 12px;
+      color: #dbe3ea;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 4px;
+      font-size: 10px;
+      letter-spacing: 0.5px;
       cursor: pointer;
       transition: 0.2s;
     }
 
-    button:hover {
-      background: #9edcff;
+    .tool-button:hover,
+    .tool-button.active {
+      color: #101820;
+      background: #9bd9ff;
+      border-color: #9bd9ff;
     }
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    /* RESPONSIVE */
 
-    #designName {
-      min-width: 115px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: bold;
-    }
+    @media (max-width: 800px) {
+      .header {
+        padding: 20px 5%;
+      }
 
-    #status {
-      position: fixed;
-      top: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 16px;
-      background: rgba(0,0,0,0.65);
-      border-radius: 7px;
-      font-size: 13px;
-      z-index: 10;
-      text-align: center;
-    }
+      .header-label {
+        font-size: 8px;
+        letter-spacing: 1px;
+      }
 
-    @media (max-width: 500px) {
-      .controls {
-        width: calc(100% - 24px);
+      .info {
+        top: 22%;
+        left: 6%;
+        transform: none;
+      }
+
+      .info h1 {
+        font-size: 34px;
+      }
+
+      .info p {
+        display: none;
+      }
+
+      .line {
+        margin: 12px 0;
+      }
+
+      .bottom-panel {
+        padding: 18px 5% 22px;
+        flex-wrap: wrap;
         justify-content: center;
-        gap: 8px;
-        padding: 10px;
+        gap: 15px;
       }
 
-      button {
-        padding: 11px 14px;
+      .design-info {
+        width: 100%;
+        text-align: center;
       }
 
-      #designName {
-        min-width: 90px;
-        font-size: 12px;
+      .navigation {
+        justify-content: center;
+      }
+
+      .tools {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .nav-button {
+        min-width: 110px;
+      }
+
+      #status {
+        top: 90px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .tool-button {
+        min-width: 40px;
+        padding: 0 8px;
+      }
+
+      .nav-button {
+        min-width: 100px;
+        padding: 0 12px;
       }
     }
   </style>
@@ -113,13 +323,61 @@
 
   <div id="viewer"></div>
 
-  <div id="status">Loading 3D model...</div>
+  <header class="header">
+    <div class="brand">VAUGHN<span>.</span>CONCHA</div>
+    <div class="header-label">3D SPORTSWEAR SHOWCASE</div>
+  </header>
 
-  <div class="controls">
-    <button id="previousBtn">← Previous</button>
-    <span id="designName">Jersey 01 / 02</span>
-    <button id="nextBtn">Next →</button>
-  </div>
+  <section class="info">
+    <div class="eyebrow">CUSTOM UNIFORM COLLECTION</div>
+    <h1>DESIGN<br>IN MOTION.</h1>
+    <div class="line"></div>
+    <p>
+      Explore custom basketball uniform designs
+      through an interactive 3D experience.
+    </p>
+  </section>
+
+  <div id="status">INITIALIZING VIEWER...</div>
+
+  <section class="bottom-panel">
+
+    <div class="design-info">
+      <div class="design-number" id="designNumber">
+        DESIGN 01 / 02
+      </div>
+
+      <div id="designName">Jersey 01</div>
+    </div>
+
+    <div class="navigation">
+      <button class="nav-button" id="previousBtn">
+        ← PREVIOUS
+      </button>
+
+      <button class="nav-button" id="nextBtn">
+        NEXT DESIGN →
+      </button>
+    </div>
+
+    <div class="tools">
+
+      <button class="tool-button" id="rotateBtn">
+        ↻ ROTATE
+      </button>
+
+      <button class="tool-button" id="resetBtn">
+        RESET VIEW
+      </button>
+
+      <button class="tool-button" id="fullscreenBtn">
+        ⛶ FULLSCREEN
+      </button>
+
+    </div>
+
+  </section>
+
 
   <script type="module">
 
@@ -134,30 +392,43 @@
 
     const scene = new THREE.Scene();
 
-    scene.background = new THREE.Color(0x101820);
-
 
     // CAMERA
 
     const camera = new THREE.PerspectiveCamera(
-      45,
+      40,
       window.innerWidth / window.innerHeight,
       0.1,
       100
     );
 
-    camera.position.set(2.5, 1.2, 3.5);
+    const initialCameraPosition = new THREE.Vector3(2.5, 1.2, 3.5);
+
+    camera.position.copy(initialCameraPosition);
 
 
     // RENDERER
 
     const renderer = new THREE.WebGLRenderer({
-      antialias: true
+      antialias: true,
+      alpha: true
     });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, 2)
+    );
+
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+    renderer.toneMappingExposure = 1.15;
+
+    renderer.shadowMap.enabled = true;
+
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     document.getElementById('viewer').appendChild(renderer.domElement);
 
@@ -167,75 +438,143 @@
     const controls = new OrbitControls(camera, renderer.domElement);
 
     controls.enableDamping = true;
+
     controls.dampingFactor = 0.05;
+
     controls.target.set(0, 0.9, 0);
+
     controls.minDistance = 1.5;
+
     controls.maxDistance = 8;
 
+    controls.autoRotate = false;
 
-    // LIGHTING
+    controls.autoRotateSpeed = 2.0;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 2);
 
-    scene.add(ambientLight);
+    // STUDIO LIGHTING
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+    const hemisphereLight = new THREE.HemisphereLight(
+      0xdceeff,
+      0x202631,
+      2.0
+    );
 
-    directionalLight.position.set(3, 5, 4);
+    scene.add(hemisphereLight);
 
-    scene.add(directionalLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 1);
+    const mainLight = new THREE.DirectionalLight(
+      0xffffff,
+      3.0
+    );
 
-    fillLight.position.set(-3, 2, -4);
+    mainLight.position.set(3, 5, 4);
+
+    mainLight.castShadow = true;
+
+    scene.add(mainLight);
+
+
+    const fillLight = new THREE.DirectionalLight(
+      0x9bd9ff,
+      2.0
+    );
+
+    fillLight.position.set(-4, 2, 3);
 
     scene.add(fillLight);
 
 
-    // MODEL AND DESIGN FILES
+    const rimLight = new THREE.DirectionalLight(
+      0xffffff,
+      3.0
+    );
+
+    rimLight.position.set(0, 3, -5);
+
+    scene.add(rimLight);
+
+
+    const bottomLight = new THREE.PointLight(
+      0x427da8,
+      25,
+      10
+    );
+
+    bottomLight.position.set(0, -1, 2);
+
+    scene.add(bottomLight);
+
+
+    // FILE PATHS
 
     const modelPath = './assets/Basketball+Kit.glb';
 
     const designs = [
+
       {
         name: 'Jersey 01',
         top: './assets/top.png',
         short: './assets/short.png'
       },
+
       {
         name: 'Jersey 02',
         top: './assets/top2.png',
         short: './assets/short2.png'
       }
+
     ];
 
 
     // VARIABLES
 
     let model = null;
+
     let currentDesign = 0;
+
     let isChangingDesign = false;
+
+    const textureCache = new Map();
 
     const textureLoader = new THREE.TextureLoader();
 
     const gltfLoader = new GLTFLoader();
 
+
+    // ELEMENTS
+
     const status = document.getElementById('status');
 
     const designName = document.getElementById('designName');
+
+    const designNumber = document.getElementById('designNumber');
 
     const previousBtn = document.getElementById('previousBtn');
 
     const nextBtn = document.getElementById('nextBtn');
 
+    const rotateBtn = document.getElementById('rotateBtn');
 
-    // LOAD TEXTURE
+    const resetBtn = document.getElementById('resetBtn');
+
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+
+    // LOAD TEXTURE WITH CACHE
 
     function loadTexture(path) {
+
+      if (textureCache.has(path)) {
+
+        return Promise.resolve(textureCache.get(path));
+
+      }
 
       return new Promise((resolve, reject) => {
 
         textureLoader.load(
+
           path,
 
           texture => {
@@ -244,7 +583,11 @@
 
             texture.flipY = false;
 
+            texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
             texture.needsUpdate = true;
+
+            textureCache.set(path, texture);
 
             resolve(texture);
 
@@ -252,7 +595,11 @@
 
           undefined,
 
-          error => reject(error)
+          error => {
+
+            reject(error);
+
+          }
 
         );
 
@@ -310,7 +657,7 @@
 
       nextBtn.disabled = true;
 
-      status.textContent = 'Changing jersey design...';
+      status.textContent = 'LOADING DESIGN...';
 
       const selectedDesign = designs[index];
 
@@ -330,15 +677,19 @@
 
         currentDesign = index;
 
-        designName.textContent =
-          selectedDesign.name + ' / ' + designs.length;
+        designName.textContent = selectedDesign.name;
 
-        status.textContent =
-          selectedDesign.name + ' loaded successfully!';
+        designNumber.textContent =
+          'DESIGN ' +
+          String(index + 1).padStart(2, '0') +
+          ' / ' +
+          String(designs.length).padStart(2, '0');
+
+        status.textContent = 'DESIGN SUCCESSFULLY LOADED';
 
         setTimeout(() => {
 
-          status.textContent = '3D Viewer Ready';
+          status.textContent = 'INTERACTIVE 3D VIEWER';
 
         }, 2000);
 
@@ -346,8 +697,7 @@
 
         console.error('Texture loading error:', error);
 
-        status.textContent =
-          'Error loading design. Check PNG files and mesh names.';
+        status.textContent = 'ERROR LOADING DESIGN - CHECK FILES';
 
       }
 
@@ -360,7 +710,7 @@
     }
 
 
-    // PREVIOUS BUTTON
+    // PREVIOUS DESIGN
 
     previousBtn.addEventListener('click', () => {
 
@@ -372,7 +722,7 @@
     });
 
 
-    // NEXT BUTTON
+    // NEXT DESIGN
 
     nextBtn.addEventListener('click', () => {
 
@@ -380,6 +730,73 @@
         (currentDesign + 1) % designs.length;
 
       changeDesign(nextIndex);
+
+    });
+
+
+    // AUTO ROTATION
+
+    rotateBtn.addEventListener('click', () => {
+
+      controls.autoRotate = !controls.autoRotate;
+
+      rotateBtn.classList.toggle(
+        'active',
+        controls.autoRotate
+      );
+
+      rotateBtn.textContent = controls.autoRotate
+        ? 'Ⅱ PAUSE'
+        : '↻ ROTATE';
+
+    });
+
+
+    // RESET CAMERA
+
+    resetBtn.addEventListener('click', () => {
+
+      camera.position.copy(initialCameraPosition);
+
+      controls.target.set(0, 0.9, 0);
+
+      controls.update();
+
+    });
+
+
+    // FULLSCREEN
+
+    fullscreenBtn.addEventListener('click', async () => {
+
+      try {
+
+        if (!document.fullscreenElement) {
+
+          await document.documentElement.requestFullscreen();
+
+        } else {
+
+          await document.exitFullscreen();
+
+        }
+
+      } catch (error) {
+
+        console.error('Fullscreen error:', error);
+
+      }
+
+    });
+
+
+    // FULLSCREEN BUTTON LABEL
+
+    document.addEventListener('fullscreenchange', () => {
+
+      fullscreenBtn.textContent = document.fullscreenElement
+        ? '✕ EXIT FULL'
+        : '⛶ FULLSCREEN';
 
     });
 
@@ -393,6 +810,18 @@
       async gltf => {
 
         model = gltf.scene;
+
+        model.traverse(object => {
+
+          if (object.isMesh) {
+
+            object.castShadow = true;
+
+            object.receiveShadow = true;
+
+          }
+
+        });
 
         scene.add(model);
 
@@ -409,7 +838,7 @@
           );
 
           status.textContent =
-            'Loading 3D model... ' + progress + '%';
+            'LOADING 3D MODEL ' + progress + '%';
 
         }
 
@@ -419,19 +848,19 @@
 
         console.error('Model loading error:', error);
 
-        status.textContent =
-          'Failed to load 3D model. Check GLB path.';
+        status.textContent = 'FAILED TO LOAD 3D MODEL';
 
       }
 
     );
 
 
-    // WINDOW RESIZE
+    // RESIZE
 
     window.addEventListener('resize', () => {
 
-      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.aspect =
+        window.innerWidth / window.innerHeight;
 
       camera.updateProjectionMatrix();
 
@@ -443,7 +872,7 @@
     });
 
 
-    // ANIMATION
+    // ANIMATION LOOP
 
     function animate() {
 
@@ -460,7 +889,6 @@
   </script>
 
 </body>
-
 </html>
 
 
