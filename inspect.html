@@ -186,7 +186,7 @@
     }
 
     function applyCustomJerseyTexture(model) {
-      status.textContent = "Loading custom sando texture...";
+      status.textContent = "Loading custom jersey texture...";
 
       textureLoader.load(
         "./assets/top.png",
@@ -215,7 +215,7 @@
 
           if (targetFound) {
             status.textContent =
-              "Custom sando texture applied successfully!";
+              "Custom jersey texture applied successfully!";
           } else {
             status.textContent =
               "Texture loaded, but mesh 3Jersey was not found.";
@@ -227,7 +227,7 @@
         (error) => {
           console.error(error);
           status.textContent =
-            "Custom sando texture loading failed. Check assets/top.png.";
+            "Custom texture loading failed. Check assets/top.png.";
         }
       );
     }
