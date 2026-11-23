@@ -1,10 +1,20 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Basketball Jersey Viewer</title>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
 
   <style>
     * {
@@ -43,7 +53,7 @@
       padding: 12px 22px;
       border: none;
       border-radius: 7px;
-      background: #ffffff;
+      background: white;
       color: #101820;
       font-weight: bold;
       cursor: pointer;
@@ -113,11 +123,11 @@
 
   <script type="module">
 
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
+    import * as THREE from 'three';
 
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 
     // SCENE
@@ -152,7 +162,7 @@
     document.getElementById('viewer').appendChild(renderer.domElement);
 
 
-    // CONTROLS
+    // ORBIT CONTROLS
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -166,18 +176,23 @@
     // LIGHTING
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+
     directionalLight.position.set(3, 5, 4);
+
     scene.add(directionalLight);
 
     const fillLight = new THREE.DirectionalLight(0xffffff, 1);
+
     fillLight.position.set(-3, 2, -4);
+
     scene.add(fillLight);
 
 
-    // FILE PATHS
+    // MODEL AND DESIGN FILES
 
     const modelPath = './assets/Basketball+Kit.glb';
 
@@ -202,42 +217,51 @@
     let isChangingDesign = false;
 
     const textureLoader = new THREE.TextureLoader();
+
     const gltfLoader = new GLTFLoader();
 
     const status = document.getElementById('status');
+
     const designName = document.getElementById('designName');
+
     const previousBtn = document.getElementById('previousBtn');
+
     const nextBtn = document.getElementById('nextBtn');
 
 
     // LOAD TEXTURE
 
     function loadTexture(path) {
+
       return new Promise((resolve, reject) => {
 
         textureLoader.load(
           path,
 
           texture => {
+
             texture.colorSpace = THREE.SRGBColorSpace;
+
             texture.flipY = false;
+
             texture.needsUpdate = true;
 
             resolve(texture);
+
           },
 
           undefined,
 
-          error => {
-            reject(error);
-          }
+          error => reject(error)
+
         );
 
       });
+
     }
 
 
-    // APPLY TEXTURE TO MESH
+    // APPLY TEXTURE
 
     function applyTexture(meshName, texture) {
 
@@ -254,8 +278,11 @@
             : [object.material];
 
           materials.forEach(material => {
+
             material.map = texture;
+
             material.needsUpdate = true;
+
           });
 
         }
@@ -263,13 +290,15 @@
       });
 
       if (!found) {
+
         throw new Error('Mesh not found: ' + meshName);
+
       }
 
     }
 
 
-    // CHANGE JERSEY DESIGN
+    // CHANGE DESIGN
 
     async function changeDesign(index) {
 
@@ -278,6 +307,7 @@
       isChangingDesign = true;
 
       previousBtn.disabled = true;
+
       nextBtn.disabled = true;
 
       status.textContent = 'Changing jersey design...';
@@ -287,11 +317,15 @@
       try {
 
         const [topTexture, shortTexture] = await Promise.all([
+
           loadTexture(selectedDesign.top),
+
           loadTexture(selectedDesign.short)
+
         ]);
 
         applyTexture('3Jersey', topTexture);
+
         applyTexture('4Short', shortTexture);
 
         currentDesign = index;
@@ -303,7 +337,9 @@
           selectedDesign.name + ' loaded successfully!';
 
         setTimeout(() => {
+
           status.textContent = '3D Viewer Ready';
+
         }, 2000);
 
       } catch (error) {
@@ -311,11 +347,12 @@
         console.error('Texture loading error:', error);
 
         status.textContent =
-          'Error loading design. Check your PNG files and mesh names.';
+          'Error loading design. Check PNG files and mesh names.';
 
       }
 
       previousBtn.disabled = false;
+
       nextBtn.disabled = false;
 
       isChangingDesign = false;
@@ -347,7 +384,7 @@
     });
 
 
-    // LOAD 3D MODEL
+    // LOAD MODEL
 
     gltfLoader.load(
 
@@ -366,12 +403,14 @@
       xhr => {
 
         if (xhr.total) {
+
           const progress = Math.round(
             (xhr.loaded / xhr.total) * 100
           );
 
           status.textContent =
             'Loading 3D model... ' + progress + '%';
+
         }
 
       },
@@ -381,14 +420,14 @@
         console.error('Model loading error:', error);
 
         status.textContent =
-          'Failed to load 3D model. Check the GLB file path.';
+          'Failed to load 3D model. Check GLB path.';
 
       }
 
     );
 
 
-    // RESPONSIVE
+    // WINDOW RESIZE
 
     window.addEventListener('resize', () => {
 
@@ -421,4 +460,7 @@
   </script>
 
 </body>
+
 </html>
+
+
