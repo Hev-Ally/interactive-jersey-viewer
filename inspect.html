@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,6 +118,7 @@
     controls.enableDamping = true;
 
     const loader = new GLTFLoader();
+    const textureLoader = new THREE.TextureLoader();
 
     function addTextureExport(model, meshName, fileName) {
       let targetMesh;
@@ -183,6 +185,53 @@
       exportArea.appendChild(button);
     }
 
+    function applyCustomJerseyTexture(model) {
+      status.textContent = "Loading custom sando texture...";
+
+      textureLoader.load(
+        "./assets/sando.png",
+
+        (texture) => {
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.flipY = false;
+          texture.needsUpdate = true;
+
+          let targetFound = false;
+
+          model.traverse((object) => {
+            if (object.isMesh && object.name === "3Jersey") {
+              targetFound = true;
+
+              const materials = Array.isArray(object.material)
+                ? object.material
+                : [object.material];
+
+              materials.forEach((material) => {
+                material.map = texture;
+                material.needsUpdate = true;
+              });
+            }
+          });
+
+          if (targetFound) {
+            status.textContent =
+              "Custom sando texture applied successfully!";
+          } else {
+            status.textContent =
+              "Texture loaded, but mesh 3Jersey was not found.";
+          }
+        },
+
+        undefined,
+
+        (error) => {
+          console.error(error);
+          status.textContent =
+            "Custom sando texture loading failed. Check assets/sando.png.";
+        }
+      );
+    }
+
     loader.load(
       "./assets/Basketball%2BKit.glb",
 
@@ -232,7 +281,8 @@
               mesh: object.name || "Unnamed Mesh",
               material: material.name || "Unnamed Material",
               geometry: object.geometry.type,
-              vertices: object.geometry.attributes.position?.count ?? 0,
+              vertices:
+                object.geometry.attributes.position?.count ?? 0,
 
               uv: !!object.geometry.attributes.uv,
 
@@ -252,7 +302,8 @@
                 material.map?.source?.data?.height ??
                 null,
 
-              textureColorSpace: material.map?.colorSpace || "None",
+              textureColorSpace:
+                material.map?.colorSpace || "None",
 
               materialType: material.type
             });
@@ -272,10 +323,9 @@
           meshes: meshReport
         };
 
-        status.textContent =
-          "Model loaded successfully. Rotate and inspect it below.";
-
         report.textContent = JSON.stringify(output, null, 2);
+
+        applyCustomJerseyTexture(model);
       },
 
       (progress) => {
