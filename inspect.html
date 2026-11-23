@@ -189,7 +189,7 @@
       status.textContent = "Loading custom sando texture...";
 
       textureLoader.load(
-        "./assets/sando.png",
+        "./assets/top.png",
 
         (texture) => {
           texture.colorSpace = THREE.SRGBColorSpace;
@@ -227,7 +227,7 @@
         (error) => {
           console.error(error);
           status.textContent =
-            "Custom sando texture loading failed. Check assets/sando.png.";
+            "Custom sando texture loading failed. Check assets/top.png.";
         }
       );
     }
