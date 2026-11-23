@@ -4,379 +4,421 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Basketball Kit - GLB Inspection</title>
+  <title>3D Basketball Jersey Viewer</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
+      overflow: hidden;
       background: #101820;
       color: white;
       font-family: Arial, sans-serif;
     }
 
-    header {
-      padding: 16px;
-      background: #182633;
-    }
-
     #viewer {
-      width: 100%;
-      height: 65vh;
+      width: 100vw;
+      height: 100vh;
     }
 
-    #texture-export {
-      padding: 16px;
-      background: #182633;
+    .controls {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 14px 18px;
+      background: rgba(10, 15, 20, 0.88);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      z-index: 10;
     }
 
-    #texture-export button {
-      padding: 12px 18px;
-      margin: 6px;
+    button {
+      padding: 12px 22px;
       border: none;
-      border-radius: 6px;
-      background: #55BCEB;
+      border-radius: 7px;
+      background: #ffffff;
       color: #101820;
       font-weight: bold;
       cursor: pointer;
+      transition: 0.2s;
     }
 
-    #texture-export button:hover {
-      background: #8bd5f5;
+    button:hover {
+      background: #9edcff;
     }
 
-    #report {
-      padding: 16px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #designName {
+      min-width: 115px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #status {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 16px;
+      background: rgba(0,0,0,0.65);
+      border-radius: 7px;
       font-size: 13px;
-      line-height: 1.6;
+      z-index: 10;
+      text-align: center;
+    }
+
+    @media (max-width: 500px) {
+      .controls {
+        width: calc(100% - 24px);
+        justify-content: center;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      button {
+        padding: 11px 14px;
+      }
+
+      #designName {
+        min-width: 90px;
+        font-size: 12px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h2>Basketball Kit - GLB Inspection</h2>
-    <p id="status">Loading model...</p>
-  </header>
 
   <div id="viewer"></div>
 
-  <div id="texture-export">
-    <h3>Texture Export</h3>
-    <p>Download the original jersey and shorts textures.</p>
+  <div id="status">Loading 3D model...</div>
+
+  <div class="controls">
+    <button id="previousBtn">← Previous</button>
+    <span id="designName">Jersey 01 / 02</span>
+    <button id="nextBtn">Next →</button>
   </div>
 
-  <pre id="report">Waiting for model...</pre>
-
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-    }
-  }
-  </script>
-
   <script type="module">
-    import * as THREE from "three";
-    import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-    const viewer = document.getElementById("viewer");
-    const status = document.getElementById("status");
-    const report = document.getElementById("report");
-    const exportArea = document.getElementById("texture-export");
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
+
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js';
+
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/controls/OrbitControls.js';
+
+
+    // SCENE
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x263746);
+
+    scene.background = new THREE.Color(0x101820);
+
+
+    // CAMERA
 
     const camera = new THREE.PerspectiveCamera(
       45,
-      viewer.clientWidth / viewer.clientHeight,
+      window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      100
     );
+
+    camera.position.set(2.5, 1.2, 3.5);
+
+
+    // RENDERER
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true
     });
 
-    renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    viewer.appendChild(renderer.domElement);
+    document.getElementById('viewer').appendChild(renderer.domElement);
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 2));
 
-    const light = new THREE.DirectionalLight(0xffffff, 3);
-    light.position.set(5, 10, 7);
-    scene.add(light);
+    // CONTROLS
 
     const controls = new OrbitControls(camera, renderer.domElement);
+
     controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.target.set(0, 0.9, 0);
+    controls.minDistance = 1.5;
+    controls.maxDistance = 8;
 
-    const loader = new GLTFLoader();
+
+    // LIGHTING
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+    directionalLight.position.set(3, 5, 4);
+    scene.add(directionalLight);
+
+    const fillLight = new THREE.DirectionalLight(0xffffff, 1);
+    fillLight.position.set(-3, 2, -4);
+    scene.add(fillLight);
+
+
+    // FILE PATHS
+
+    const modelPath = './assets/Basketball+Kit.glb';
+
+    const designs = [
+      {
+        name: 'Jersey 01',
+        top: './assets/top.png',
+        short: './assets/short.png'
+      },
+      {
+        name: 'Jersey 02',
+        top: './assets/top2.png',
+        short: './assets/short2.png'
+      }
+    ];
+
+
+    // VARIABLES
+
+    let model = null;
+    let currentDesign = 0;
+    let isChangingDesign = false;
+
     const textureLoader = new THREE.TextureLoader();
+    const gltfLoader = new GLTFLoader();
 
-    function addTextureExport(model, meshName, fileName) {
-      let targetMesh;
+    const status = document.getElementById('status');
+    const designName = document.getElementById('designName');
+    const previousBtn = document.getElementById('previousBtn');
+    const nextBtn = document.getElementById('nextBtn');
 
-      model.traverse((object) => {
-        if (object.isMesh && object.name === meshName) {
-          targetMesh = object;
-        }
-      });
 
-      if (!targetMesh) {
-        status.textContent += ` Missing mesh: ${meshName}.`;
-        return;
-      }
+    // LOAD TEXTURE
 
-      const material = Array.isArray(targetMesh.material)
-        ? targetMesh.material[0]
-        : targetMesh.material;
-
-      const texture = material?.map;
-      const image = texture?.image;
-
-      if (!image) {
-        status.textContent += ` Missing texture: ${meshName}.`;
-        return;
-      }
-
-      const button = document.createElement("button");
-      button.textContent = `Download ${fileName}`;
-
-      button.addEventListener("click", () => {
-        const canvas = document.createElement("canvas");
-
-        canvas.width = image.naturalWidth || image.width;
-        canvas.height = image.naturalHeight || image.height;
-
-        const context = canvas.getContext("2d");
-
-        context.drawImage(
-          image,
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
-
-        canvas.toBlob((blob) => {
-          if (!blob) {
-            status.textContent = "Texture export failed.";
-            return;
-          }
-
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement("a");
-
-          link.href = url;
-          link.download = fileName;
-          link.click();
-
-          setTimeout(() => URL.revokeObjectURL(url), 1000);
-        }, "image/png");
-      });
-
-      exportArea.appendChild(button);
-    }
-
-    function applyCustomTexture(model, meshName, filePath) {
+    function loadTexture(path) {
       return new Promise((resolve, reject) => {
-        textureLoader.load(
-          filePath,
 
-          (texture) => {
+        textureLoader.load(
+          path,
+
+          texture => {
             texture.colorSpace = THREE.SRGBColorSpace;
             texture.flipY = false;
             texture.needsUpdate = true;
 
-            let targetFound = false;
-
-            model.traverse((object) => {
-              if (object.isMesh && object.name === meshName) {
-                targetFound = true;
-
-                const materials = Array.isArray(object.material)
-                  ? object.material
-                  : [object.material];
-
-                materials.forEach((material) => {
-                  material.map = texture;
-                  material.needsUpdate = true;
-                });
-              }
-            });
-
-            if (targetFound) {
-              resolve(meshName);
-            } else {
-              texture.dispose();
-              reject(`Mesh not found: ${meshName}`);
-            }
+            resolve(texture);
           },
 
           undefined,
 
-          (error) => {
-            console.error(error);
-            reject(`Failed to load: ${filePath}`);
+          error => {
+            reject(error);
           }
         );
+
       });
     }
 
-    loader.load(
-      "./assets/Basketball%2BKit.glb",
 
-      async (gltf) => {
-        const model = gltf.scene;
-        scene.add(model);
+    // APPLY TEXTURE TO MESH
 
-        addTextureExport(model, "3Jersey", "Jersey3_D3.png");
-        addTextureExport(model, "4Short", "Short_D3.png");
+    function applyTexture(meshName, texture) {
 
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
+      let found = false;
 
-        model.position.sub(center);
+      model.traverse(object => {
 
-        const maxDimension = Math.max(size.x, size.y, size.z);
-        const distance = maxDimension * 2.2;
+        if (object.name === meshName) {
 
-        camera.position.set(
-          distance,
-          distance * 0.6,
-          distance
-        );
-
-        camera.near = maxDimension / 1000;
-        camera.far = maxDimension * 100;
-        camera.updateProjectionMatrix();
-
-        controls.target.set(0, 0, 0);
-        controls.update();
-
-        const meshReport = [];
-        const materialsSeen = new Set();
-
-        model.traverse((object) => {
-          if (!object.isMesh) return;
+          found = true;
 
           const materials = Array.isArray(object.material)
             ? object.material
             : [object.material];
 
-          materials.forEach((material) => {
-            materialsSeen.add(material);
-
-            meshReport.push({
-              mesh: object.name || "Unnamed Mesh",
-              material: material.name || "Unnamed Material",
-              geometry: object.geometry.type,
-              vertices:
-                object.geometry.attributes.position?.count ?? 0,
-
-              uv: !!object.geometry.attributes.uv,
-
-              hasColorMap: !!material.map,
-              hasNormalMap: !!material.normalMap,
-              hasRoughnessMap: !!material.roughnessMap,
-
-              colorTexture: material.map?.name || "Unnamed Texture",
-
-              textureWidth:
-                material.map?.image?.width ??
-                material.map?.source?.data?.width ??
-                null,
-
-              textureHeight:
-                material.map?.image?.height ??
-                material.map?.source?.data?.height ??
-                null,
-
-              textureColorSpace:
-                material.map?.colorSpace || "None",
-
-              materialType: material.type
-            });
+          materials.forEach(material => {
+            material.map = texture;
+            material.needsUpdate = true;
           });
-        });
 
-        const output = {
-          model: "Basketball+Kit.glb",
-          status: "Loaded successfully",
-          meshCount: meshReport.length,
-          materialCount: materialsSeen.size,
-          dimensions: {
-            x: size.x,
-            y: size.y,
-            z: size.z
-          },
-          meshes: meshReport
-        };
+        }
 
-        report.textContent = JSON.stringify(output, null, 2);
+      });
 
-        status.textContent = "Applying custom uniform textures...";
+      if (!found) {
+        throw new Error('Mesh not found: ' + meshName);
+      }
 
-        const results = await Promise.allSettled([
-          applyCustomTexture(model, "3Jersey", "./assets/top.png"),
-          applyCustomTexture(model, "4Short", "./assets/short.png")
+    }
+
+
+    // CHANGE JERSEY DESIGN
+
+    async function changeDesign(index) {
+
+      if (isChangingDesign || !model) return;
+
+      isChangingDesign = true;
+
+      previousBtn.disabled = true;
+      nextBtn.disabled = true;
+
+      status.textContent = 'Changing jersey design...';
+
+      const selectedDesign = designs[index];
+
+      try {
+
+        const [topTexture, shortTexture] = await Promise.all([
+          loadTexture(selectedDesign.top),
+          loadTexture(selectedDesign.short)
         ]);
 
-        const jerseyResult = results[0];
-        const shortsResult = results[1];
+        applyTexture('3Jersey', topTexture);
+        applyTexture('4Short', shortTexture);
 
-        if (jerseyResult.status === "fulfilled" &&
-            shortsResult.status === "fulfilled") {
+        currentDesign = index;
 
-          status.textContent =
-            "SUCCESS! Custom jersey and shorts textures applied.";
+        designName.textContent =
+          selectedDesign.name + ' / ' + designs.length;
 
-        } else {
-          const errors = results
-            .filter(result => result.status === "rejected")
-            .map(result => result.reason);
+        status.textContent =
+          selectedDesign.name + ' loaded successfully!';
 
-          status.textContent =
-            "Texture application issue: " + errors.join(" | ");
-        }
-      },
+        setTimeout(() => {
+          status.textContent = '3D Viewer Ready';
+        }, 2000);
 
-      (progress) => {
-        if (progress.total) {
-          status.textContent =
-            `Loading: ${Math.round(progress.loaded / progress.total * 100)}%`;
-        }
-      },
+      } catch (error) {
 
-      (error) => {
-        console.error(error);
-        status.textContent = "Model loading failed.";
-        report.textContent =
-          "Check the browser console for the error details.";
+        console.error('Texture loading error:', error);
+
+        status.textContent =
+          'Error loading design. Check your PNG files and mesh names.';
+
       }
+
+      previousBtn.disabled = false;
+      nextBtn.disabled = false;
+
+      isChangingDesign = false;
+
+    }
+
+
+    // PREVIOUS BUTTON
+
+    previousBtn.addEventListener('click', () => {
+
+      const previousIndex =
+        (currentDesign - 1 + designs.length) % designs.length;
+
+      changeDesign(previousIndex);
+
+    });
+
+
+    // NEXT BUTTON
+
+    nextBtn.addEventListener('click', () => {
+
+      const nextIndex =
+        (currentDesign + 1) % designs.length;
+
+      changeDesign(nextIndex);
+
+    });
+
+
+    // LOAD 3D MODEL
+
+    gltfLoader.load(
+
+      modelPath,
+
+      async gltf => {
+
+        model = gltf.scene;
+
+        scene.add(model);
+
+        await changeDesign(0);
+
+      },
+
+      xhr => {
+
+        if (xhr.total) {
+          const progress = Math.round(
+            (xhr.loaded / xhr.total) * 100
+          );
+
+          status.textContent =
+            'Loading 3D model... ' + progress + '%';
+        }
+
+      },
+
+      error => {
+
+        console.error('Model loading error:', error);
+
+        status.textContent =
+          'Failed to load 3D model. Check the GLB file path.';
+
+      }
+
     );
 
+
+    // RESPONSIVE
+
+    window.addEventListener('resize', () => {
+
+      camera.aspect = window.innerWidth / window.innerHeight;
+
+      camera.updateProjectionMatrix();
+
+      renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+      );
+
+    });
+
+
+    // ANIMATION
+
     function animate() {
+
       requestAnimationFrame(animate);
+
       controls.update();
+
       renderer.render(scene, camera);
+
     }
 
     animate();
 
-    window.addEventListener("resize", () => {
-      camera.aspect = viewer.clientWidth / viewer.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
-    });
   </script>
+
 </body>
 </html>
