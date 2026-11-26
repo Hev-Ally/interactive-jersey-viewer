@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -36,29 +37,117 @@
       overflow: hidden;
       color: var(--white);
       font-family: Arial, Helvetica, sans-serif;
-      background: var(--black);
+      background: var(--charcoal);
     }
 
     button {
       font: inherit;
     }
 
+    /* =====================================
+       BACKGROUND JERSEY IMAGES
+    ===================================== */
+
+    .jersey-backgrounds {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background:
+        radial-gradient(
+          ellipse at 50% 30%,
+          rgba(48, 35, 43, 0.55),
+          transparent 65%
+        ),
+        #1c1c1c;
+    }
+
+    .bg-jersey {
+      position: absolute;
+      top: 4%;
+      width: min(39vw, 620px);
+      height: 78%;
+      object-fit: contain;
+      opacity: 0.25;
+      filter: blur(2.5px) saturate(0.85);
+      mix-blend-mode: screen;
+
+      -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        black 7%,
+        black 48%,
+        rgba(0,0,0,0.8) 62%,
+        rgba(0,0,0,0.35) 78%,
+        transparent 100%
+      );
+
+      mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        black 7%,
+        black 48%,
+        rgba(0,0,0,0.8) 62%,
+        rgba(0,0,0,0.35) 78%,
+        transparent 100%
+      );
+    }
+
+    .bg-jersey-front {
+      left: 0;
+      object-position: center top;
+    }
+
+    .bg-jersey-back {
+      right: 0;
+      object-position: center top;
+    }
+
+    /* Subtle colored atmosphere behind the jerseys */
+
+    .jersey-backgrounds::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(
+          ellipse at 18% 28%,
+          rgba(255, 43, 120, 0.10),
+          transparent 35%
+        ),
+        radial-gradient(
+          ellipse at 82% 28%,
+          rgba(196, 255, 0, 0.055),
+          transparent 35%
+        );
+    }
+
+    /* =====================================
+       THREE.JS VIEWER
+    ===================================== */
+
     #viewer {
       position: fixed;
       inset: 0;
       z-index: 1;
-      background: #1C1C1C;
+      background: transparent;
     }
 
     #viewer canvas {
       display: block;
     }
 
+    /* =====================================
+       AMBIENT OVERLAY
+    ===================================== */
+
     .ambient-overlay {
       position: fixed;
       inset: 0;
       z-index: 2;
       pointer-events: none;
+
       background:
         radial-gradient(
           ellipse at 70% 42%,
@@ -71,8 +160,18 @@
           rgba(16, 16, 16, 0.55),
           transparent 48%,
           rgba(16, 16, 16, 0.08)
+        ),
+        linear-gradient(
+          to bottom,
+          rgba(16, 16, 16, 0.08) 45%,
+          rgba(16, 16, 16, 0.32) 75%,
+          rgba(16, 16, 16, 0.65) 100%
         );
     }
+
+    /* =====================================
+       HEADER
+    ===================================== */
 
     .header {
       position: fixed;
@@ -86,6 +185,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 20px;
+
       background: linear-gradient(
         to bottom,
         rgba(16, 16, 16, 0.96),
@@ -153,6 +253,10 @@
       vertical-align: 1px;
     }
 
+    /* =====================================
+       INTRODUCTION
+    ===================================== */
+
     .info {
       position: fixed;
       z-index: 4;
@@ -212,6 +316,10 @@
       margin: 0;
     }
 
+    /* =====================================
+       STATUS
+    ===================================== */
+
     #status {
       position: fixed;
       z-index: 6;
@@ -231,6 +339,10 @@
       backdrop-filter: blur(12px);
     }
 
+    /* =====================================
+       BOTTOM PANEL
+    ===================================== */
+
     .bottom-panel {
       position: fixed;
       bottom: 0;
@@ -244,12 +356,14 @@
       align-items: center;
       gap: 20px;
       border-top: 1px solid var(--line);
+
       background: linear-gradient(
         to top,
         rgba(16, 16, 16, 0.98),
         rgba(16, 16, 16, 0.9),
         rgba(16, 16, 16, 0.55)
       );
+
       backdrop-filter: blur(14px);
     }
 
@@ -289,6 +403,7 @@
       font-weight: 800;
       letter-spacing: 1px;
       cursor: pointer;
+
       transition:
         background 0.2s ease,
         color 0.2s ease,
@@ -338,6 +453,7 @@
       font-weight: 700;
       letter-spacing: 0.8px;
       cursor: pointer;
+
       transition:
         background 0.2s ease,
         color 0.2s ease,
@@ -366,7 +482,18 @@
       outline-offset: 3px;
     }
 
+    /* =====================================
+       TABLET RESPONSIVE
+    ===================================== */
+
     @media (max-width: 900px) {
+      .bg-jersey {
+        width: 44vw;
+        height: 70%;
+        opacity: 0.20;
+        filter: blur(3px);
+      }
+
       .info {
         width: 270px;
         top: 43%;
@@ -395,7 +522,19 @@
       }
     }
 
+    /* =====================================
+       MOBILE RESPONSIVE
+    ===================================== */
+
     @media (max-width: 560px) {
+      .bg-jersey {
+        top: 12%;
+        width: 50vw;
+        height: 57%;
+        opacity: 0.16;
+        filter: blur(3.5px);
+      }
+
       .header {
         min-height: 70px;
         padding: 15px 5%;
@@ -530,23 +669,55 @@
 
 <body>
 
+  <!-- =====================================
+       BACKGROUND JERSEY IMAGES
+  ====================================== -->
+
+  <div class="jersey-backgrounds">
+
+    <img
+      src="./assets/bg-jersey-front.png"
+      class="bg-jersey bg-jersey-front"
+      alt=""
+    >
+
+    <img
+      src="./assets/bg-jersey-back.png"
+      class="bg-jersey bg-jersey-back"
+      alt=""
+    >
+
+  </div>
+
+  <!-- THREE.JS VIEWER -->
+
   <div id="viewer"></div>
+
   <div class="ambient-overlay"></div>
 
+  <!-- HEADER -->
+
   <header class="header">
+
     <div class="brand-wrap">
+
       <div class="brand-mark">V</div>
 
       <div class="brand-copy">
         <div class="brand">VAUGHN<span>.</span>CONCHA</div>
         <div class="brand-subtitle">JUNIOR GRAPHIC DESIGNER</div>
       </div>
+
     </div>
 
     <div class="header-label">3D SPORTSWEAR SHOWCASE</div>
+
   </header>
 
+  <!-- INTRODUCTION -->
+
   <section class="info">
+
     <div class="eyebrow">
       CUSTOM UNIFORM COLLECTION <span>/</span> 2026
     </div>
@@ -562,21 +733,29 @@
       Explore custom basketball uniform designs
       through an interactive 3D experience.
     </p>
+
   </section>
 
+  <!-- STATUS -->
+
   <div id="status">INITIALIZING STUDIO...</div>
+
+  <!-- BOTTOM PANEL -->
 
   <section class="bottom-panel">
 
     <div class="design-info">
+
       <div class="design-number" id="designNumber">
         DESIGN 01 / 02
       </div>
 
       <div id="designName">Jersey 01</div>
+
     </div>
 
     <div class="navigation">
+
       <button class="nav-button" id="previousBtn">
         ← PREVIOUS DESIGN
       </button>
@@ -584,9 +763,11 @@
       <button class="nav-button" id="nextBtn">
         NEXT DESIGN →
       </button>
+
     </div>
 
     <div class="tools">
+
       <button class="tool-button active" id="rotateBtn">
         Ⅱ PAUSE ROTATION
       </button>
@@ -598,6 +779,7 @@
       <button class="tool-button" id="fullscreenBtn">
         ⛶ FULLSCREEN
       </button>
+
     </div>
 
   </section>
@@ -617,7 +799,10 @@
 
     const scene = new THREE.Scene();
 
-    scene.background = new THREE.Color(0x1c1c1c);
+    // Transparent scene background allows the PNG images
+    // behind the canvas to remain visible.
+
+    scene.background = null;
 
     scene.fog = new THREE.Fog(0x1c1c1c, 18, 42);
 
@@ -646,7 +831,7 @@
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
-      alpha: false
+      alpha: true
     });
 
     renderer.setSize(
@@ -708,7 +893,7 @@
     scene.add(hemisphereLight);
 
 
-    // Neutral key light to preserve the original jersey colors.
+    // Neutral key light.
 
     const keyLight = new THREE.DirectionalLight(
       0xfff1e8,
@@ -841,7 +1026,7 @@
     studioGroup.add(platform);
 
 
-    // Pink accent ring around the platform.
+    // Pink accent ring.
 
     const pinkRing = new THREE.Mesh(
       new THREE.TorusGeometry(1.58, 0.018, 8, 96),
@@ -1200,7 +1385,8 @@
 
         });
 
-        // Preserve the existing automatic model grounding logic.
+        // Preserve existing automatic model grounding logic.
+
         model.updateMatrixWorld(true);
 
         const modelBounds = new THREE.Box3().setFromObject(model);
@@ -1287,3 +1473,9 @@
 </body>
 
 </html>
+
+
+
+
+
+
